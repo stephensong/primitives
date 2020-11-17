@@ -1,6 +1,12 @@
 import { Axis, clamp, getResizeObserverEntryBorderBoxSize, canUseDOM } from '@interop-ui/utils';
 import { useCallbackRef, useLayoutEffect } from '@interop-ui/react-utils';
-import { ScrollDirection, LogicalDirection, PointerPosition, ScrollAreaRefs } from './types';
+import {
+  ScrollDirection,
+  LogicalDirection,
+  PointerPosition,
+  ScrollbarVisibility,
+  OverflowBehavior,
+} from './types';
 
 export function supportsCustomScrollbars() {
   if (!canUseDOM()) return false;
@@ -27,31 +33,16 @@ export function getPointerPosition(event: PointerEvent): PointerPosition {
   };
 }
 
-export function getScrollbarRef(axis: Axis, ctx: ScrollAreaRefs) {
-  return axis === 'x' ? ctx.scrollbarXRef : ctx.scrollbarYRef;
-}
-
-export function getThumbRef(axis: Axis, ctx: ScrollAreaRefs) {
-  return axis === 'x' ? ctx.thumbXRef : ctx.thumbYRef;
-}
-
-export function getTrackRef(axis: Axis, ctx: ScrollAreaRefs) {
-  return axis === 'x' ? ctx.trackXRef : ctx.trackYRef;
-}
-
-export function getButtonRef(direction: LogicalDirection, axis: Axis, ctx: ScrollAreaRefs) {
-  const actualDirection = getActualScrollDirection(direction, axis);
-  switch (actualDirection) {
-    case 'down':
-      return ctx.buttonDownRef;
-    case 'up':
-      return ctx.buttonUpRef;
-    case 'left':
-      return ctx.buttonLeftRef;
-    case 'right':
-      return ctx.buttonRightRef;
-  }
-}
+export const hasOffset = (
+  scrollbarVisibility: ScrollbarVisibility,
+  overflowProp: OverflowBehavior,
+  isOverflowing: boolean
+) => {
+  return (
+    scrollbarVisibility === 'always' &&
+    (overflowProp === 'scroll' || (overflowProp === 'auto' && isOverflowing))
+  );
+};
 
 export function pointerIsOutsideElement(event: PointerEvent, element: Element, rect?: DOMRect) {
   rect = rect || element.getBoundingClientRect();
@@ -321,30 +312,27 @@ export function useBorderBoxResizeObserver(
   const onResize = useCallbackRef(callback);
   useLayoutEffect(() => {
     const element = ref.current;
-    if (!element) {
-      // TODO:
-      throw Error('GIMME DAT REF');
+    if (element) {
+      // @ts-ignore
+      const observer = new ResizeObserver(([entry]) => {
+        const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
+        onResize(borderBoxSize, entry.target);
+      });
+
+      const initialRect = element.getBoundingClientRect();
+      onResize(
+        {
+          inlineSize: initialRect.width,
+          blockSize: initialRect.height,
+        },
+        element
+      );
+      observer.observe(element);
+
+      return function () {
+        observer.disconnect();
+      };
     }
-
-    // @ts-ignore
-    const observer = new ResizeObserver(([entry]) => {
-      const borderBoxSize = getResizeObserverEntryBorderBoxSize(entry);
-      onResize(borderBoxSize, entry.target);
-    });
-
-    const initialRect = element.getBoundingClientRect();
-    onResize(
-      {
-        inlineSize: initialRect.width,
-        blockSize: initialRect.height,
-      },
-      element
-    );
-    observer.observe(element);
-
-    return function () {
-      observer.disconnect();
-    };
   }, [onResize, ref]);
 }
 

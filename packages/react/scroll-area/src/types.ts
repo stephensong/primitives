@@ -9,20 +9,17 @@ export type ResizeBehavior = 'none' | 'both' | 'horizontal' | 'vertical' | 'init
 export type ScrollbarVisibility = 'always' | 'scroll' | 'hover';
 export type ScrollDirection = 'up' | 'down' | 'left' | 'right';
 export type TrackClickBehavior = 'page' | 'relative';
-export type ScrollAreaRefs = {
-  buttonLeftRef: React.RefObject<HTMLDivElement>;
-  buttonRightRef: React.RefObject<HTMLDivElement>;
-  buttonUpRef: React.RefObject<HTMLDivElement>;
-  buttonDownRef: React.RefObject<HTMLDivElement>;
-  viewportRef: React.RefObject<HTMLDivElement>;
-  positionRef: React.RefObject<HTMLDivElement>;
-  scrollAreaRef: React.RefObject<HTMLDivElement>;
-  scrollbarYRef: React.RefObject<HTMLDivElement>;
-  scrollbarXRef: React.RefObject<HTMLDivElement>;
-  thumbYRef: React.RefObject<HTMLDivElement>;
-  thumbXRef: React.RefObject<HTMLDivElement>;
-  trackYRef: React.RefObject<HTMLDivElement>;
-  trackXRef: React.RefObject<HTMLDivElement>;
+
+export type ScrollAreaNodes = {
+  position?: HTMLDivElement | null;
+  scrollbarX?: HTMLDivElement | null;
+  scrollbarY?: HTMLDivElement | null;
+  viewport?: HTMLDivElement | null;
+};
+
+export type ScrollAreaScrollbarNodes = {
+  thumb?: HTMLDivElement | null;
+  track?: HTMLDivElement | null;
 };
 
 export type ScrollAreaOwnProps = {
@@ -79,15 +76,18 @@ export type ScrollAreaContextValue = {
   dir?: 'rtl' | 'ltr';
   overflowX: OverflowBehavior;
   overflowY: OverflowBehavior;
-  prefersReducedMotion: boolean;
+  isReducedMotion: boolean;
   scrollbarVisibility: ScrollbarVisibility;
   scrollbarVisibilityRestTimeout: number;
   trackClickBehavior: TrackClickBehavior;
-  onScroll: React.ComponentProps<'div'>['onScroll'];
   isHovered: boolean;
 };
 
 export type ScrollbarContextValue = {
   axis: Axis;
   scrollAnimationQueue: Queue<any>;
+  scrollbarNodesRef: React.MutableRefObject<ScrollAreaScrollbarNodes>;
+  onTrackResize(size: Size): void;
+  onTrackPagePointerDown?(): void;
+  onTrackScrollPointerDown?(): void;
 };

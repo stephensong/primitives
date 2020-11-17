@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { styled } from '../../../../stitches.config';
 import { ScrollArea, styles } from './ScrollArea';
-import { Popover as PopoverPrimitive, styles as popoverStyles } from '@interop-ui/react-popover';
+import { Popover as PopoverPrimitive } from '@interop-ui/react-popover';
 import { TrackClickBehavior, ScrollbarVisibility } from './types';
 
-export default { title: 'ScrollArea' };
+export default { title: 'Components/ScrollArea' };
 
 export function Basic() {
   const [usesNative, setNative] = React.useState(false);
@@ -157,10 +157,8 @@ export function InsidePopover() {
           <PopoverPrimitive.Trigger as="button">
             {isOpen ? 'close' : 'open'}
           </PopoverPrimitive.Trigger>
-          <PopoverPrimitive.Position style={{ ...popoverStyles.position }}>
-            <PopoverPrimitive.Content
-              style={{ ...popoverStyles.content, backgroundColor: '#eee', width: 250, height: 150 }}
-            >
+          <PopoverPrimitive.Popper>
+            <PopoverPrimitive.Content style={{ backgroundColor: '#eee', width: 250, height: 150 }}>
               <ScrollArea
                 overflowX="scroll"
                 scrollbarVisibility="scroll"
@@ -178,8 +176,8 @@ export function InsidePopover() {
                 </ScrollArea.Viewport>
               </ScrollArea>
             </PopoverPrimitive.Content>
-            <PopoverPrimitive.Arrow width={50} height={20} style={{ ...popoverStyles.arrow }} />
-          </PopoverPrimitive.Position>
+            <PopoverPrimitive.Arrow width={50} height={20} />
+          </PopoverPrimitive.Popper>
         </PopoverPrimitive>
       </div>
     </div>
