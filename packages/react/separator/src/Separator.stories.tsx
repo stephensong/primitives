@@ -64,12 +64,14 @@ const rootClass = css({
     height: '1px',
     width: '100%',
     margin: '20px 0',
+    '&[role="separator"]': { height: '2px' },
   },
 
   '&[data-orientation="vertical"]': {
     height: '100px',
     width: '1px',
     margin: '0 20px',
+    '&[role="separator"]': { width: '2px' },
   },
 });
 
